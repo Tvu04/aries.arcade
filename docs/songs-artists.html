@@ -69,7 +69,7 @@
     <p class="eyebrow">ARIES ARCADE / MINI-GAME</p>
     <h2 id="aux-title">Pass the Aux</h2>
   </header>
-  <p>Pick a song for each scenario and see how often you match the featured pick. Play five rounds from a pool of 12 scenarios.</p>
+  <p>Pick a song for each scenario and see how often you match the featured pick. Play 10 rounds from a pool of 12 scenarios.</p>
   <p id="aux-progress" class="eyebrow"></p>
   <h3 id="aux-prompt" tabindex="-1"></h3>
   <div class="aux-choices" role="group" aria-labelledby="aux-prompt"></div>
@@ -334,8 +334,7 @@ function showAuxRound() {
       const matched = id === featuredId;
       if (matched) auxMatches++;
       const [featuredTitle, featuredArtist] = tracksById.get(featuredId);
-      const label = auxIndex === 0 ? 'Thien’s pick' : 'Arcade pick';
-      auxResult.textContent = (matched ? 'You matched! ' : '') + label + ' · ' + featuredTitle + ' by ' + featuredArtist;
+      auxResult.textContent = (matched ? 'You matched! ' : '') + 'Arcade pick · ' + featuredTitle + ' by ' + featuredArtist;
       auxTrack.href = 'https://music.youtube.com/watch?v=' + featuredId;
       auxTrack.hidden = false;
       auxNext.textContent = auxIndex + 1 === auxSession.length ? 'See Results' : 'Next Round';
@@ -348,7 +347,7 @@ function showAuxRound() {
 }
 
 auxStart.addEventListener('click', () => {
-  auxSession = [auxRounds[0], ...shuffleAux(auxRounds.slice(1)).slice(0, 4)];
+  auxSession = shuffleAux(auxRounds).slice(0, 10);
   auxIndex = 0;
   auxMatches = 0;
   auxStart.hidden = true;
