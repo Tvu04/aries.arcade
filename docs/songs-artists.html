@@ -29,6 +29,11 @@
 #saved-tracks { list-style:none; padding:0; }
 #saved-tracks li { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.5rem; padding:.65rem 0; border-bottom:1px solid var(--line); }
 #saved-tracks button { border:1px solid var(--line); border-radius:.35rem; background:var(--panel); color:inherit; padding:.4rem .6rem; }
+.aux-choices { display:flex; flex-wrap:wrap; gap:.65rem; }
+.aux-choices button { border:1px solid var(--line); border-radius:.5rem; background:var(--panel); color:inherit; text-align:left; }
+.aux-choices button:hover,.aux-choices button:focus-visible { background:var(--panel); color:var(--lime); }
+.aux-choices button[aria-pressed="true"] { background:var(--lime); color:#151119; }
+#aux-result { margin:1rem 0 0; }
 </style></head>
 <body><header class="shell top collections-top"><a class="brand" href="./"><img src="logo.svg" alt="" width="44" height="44"><span>ARIES<b>ARCADE</b></span></a><nav class="collections-nav" aria-label="Main navigation"><a href="game-library.html">Game Library</a><a href="k-pop-k-dramas.html">K-Pop / K-Dramas</a><a href="songs-artists.html" aria-current="page">Songs / Artists</a><a href="movies-tv.html">Movies / TV Shows</a></nav></header>
 <main class="shell collection-page"><p class="eyebrow"><span></span> COLLECTION / 03</p><h1 class="collection-title">Songs / Artists</h1><p>The songs I keep on repeat and the artists I listen to most.</p>
@@ -51,6 +56,19 @@
     <ul id="saved-tracks"></ul>
     <p id="saved-status" role="status"></p>
   </section>
+</section>
+<section class="wrapped song-picker" aria-labelledby="aux-title">
+  <header class="wrapped-header">
+    <p class="eyebrow">ARIES ARCADE / YOUR TURN</p>
+    <h2 id="aux-title">Pass the Aux</h2>
+  </header>
+  <p>You’re driving home late at night with friends. What are you playing?</p>
+  <div class="aux-choices" role="group" aria-label="Choose a song">
+    <button class="button" type="button" data-aux-song="Every Summertime" aria-pressed="false">Every Summertime · NIKI</button>
+    <button class="button" type="button" data-aux-song="dreamy night" aria-pressed="false">dreamy night · Lilypichu</button>
+    <button class="button" type="button" data-aux-song="Coffee" aria-pressed="false">Coffee · Tori Kelly</button>
+  </div>
+  <p id="aux-result" role="status"></p>
 </section>
 <section class="wrapped" aria-labelledby="wrapped-title">
   <header class="wrapped-header">
@@ -182,4 +200,17 @@ saveButton.addEventListener('click', () => {
 });
 
 renderSavedSongs();
+</script><script>
+const auxChoices = document.querySelectorAll('[data-aux-song]');
+const auxResult = document.querySelector('#aux-result');
+const myAuxPick = 'Every Summertime';
+for (const choice of auxChoices) {
+  choice.addEventListener('click', () => {
+    for (const option of auxChoices) {
+      option.setAttribute('aria-pressed', String(option === choice));
+    }
+    const matched = choice.dataset.auxSong === myAuxPick;
+    auxResult.textContent = (matched ? 'You matched my pick! ' : 'My pick was ') + 'Every Summertime by NIKI.';
+  });
+}
 </script></body></html>
