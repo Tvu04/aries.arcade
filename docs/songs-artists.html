@@ -69,7 +69,7 @@
     <p class="eyebrow">ARIES ARCADE / MINI-GAME</p>
     <h2 id="aux-title">Pass the Aux</h2>
   </header>
-  <p>Pick a song for each scenario and see how often you match the featured pick. Play 10 rounds from a pool of 12 scenarios.</p>
+  <p>Pick a song for each scenario and see how often you match the featured pick. Play up to 10 rounds per game from 60 scenarios. This browser remembers the questions you’ve seen.</p>
   <p id="aux-progress" class="eyebrow"></p>
   <h3 id="aux-prompt" tabindex="-1"></h3>
   <div class="aux-choices" role="group" aria-labelledby="aux-prompt"></div>
@@ -209,7 +209,7 @@ saveButton.addEventListener('click', () => {
 
 renderSavedSongs();
 </script><script>
-const auxRounds = [
+const auxThemes = [
   [
     "You’re driving home late at night with friends. What are you playing?",
     "UyMvBWVGaOA",
@@ -283,6 +283,97 @@ const auxRounds = [
     "7gBadWs9Bu8"
   ]
 ];
+const auxScenarios = [
+  [
+    "You’ve got the aux on a midnight snack run. What goes on first?",
+    "You’re waiting in the car for your friend to finish their shift. What are you playing?",
+    "The city lights come on as you cross a bridge. What’s the soundtrack?",
+    "The last train is nearly empty. What song fits the ride home?"
+  ],
+  [
+    "The wedding DJ hands you the aux after dinner. What gets people moving?",
+    "Your living room turns into a dance floor after game night. What do you play?",
+    "The crowd at a rooftop party is finally warming up. What’s your next song?",
+    "You’re making a one-song dance routine with friends. What track do you pick?"
+  ],
+  [
+    "Your friends roll down the windows as you leave town. What do you put on?",
+    "You’re driving along the coast with the windows open. What’s playing?",
+    "The whole car needs a boost halfway through a long drive. What do you queue?",
+    "You reach the scenic stretch of your drive just before sunset. What plays?"
+  ],
+  [
+    "You just finished your last final. What’s your victory song?",
+    "Your friend lands their first job offer. What do you put on to celebrate?",
+    "Your team wins a match you thought was over. What plays in the lobby?",
+    "You’re making a montage of your best moments this year. What opens it?"
+  ],
+  [
+    "Your café table overlooks a rainy street. What’s in your headphones?",
+    "You’re reading by a window on a slow Sunday. What do you put on?",
+    "You’re winding down after a long shift with a hot drink. What plays?",
+    "You’re up before everyone else on a quiet holiday morning. What’s playing?"
+  ],
+  [
+    "Your friend deletes their ex’s number. What song do you queue?",
+    "Your group is getting ready for a night out after a rough breakup. What plays first?",
+    "You finally stop checking your ex’s socials. What goes on your playlist?",
+    "Your friend is tired of sad breakup songs and wants something bold. What do you play?"
+  ],
+  [
+    "You’re singing into a hairbrush while getting ready. What’s your song?",
+    "Your friend challenges you to a vocal showdown at karaoke. What do you pick?",
+    "You get the closing slot at open mic night. What are you singing?",
+    "You’re filming a dramatic lip-sync with friends. What song do you choose?"
+  ],
+  [
+    "The venue is almost empty and there’s time for one more dance. What plays?",
+    "You’re putting together a playlist for a candlelit dinner. What starts it?",
+    "You want one song for a slow dance in the kitchen. What goes on?",
+    "You’re picking the first dance track for a fictional movie couple. What fits?"
+  ],
+  [
+    "You’re taking yourself out on a solo date. What goes in your headphones?",
+    "You walk out of a meeting where you finally stood up for yourself. What do you play?",
+    "Your friend needs a confidence boost before walking into a party alone. What do you send?",
+    "You finish something everyone said you couldn’t do. What’s your walkout song?"
+  ],
+  [
+    "You’re making a playlist for the saddest scene in a movie. What song goes on it?",
+    "Your friend wants a song for an overdue cry. What do you send?",
+    "You’re watching the rain from the passenger seat after a hard goodbye. What plays?",
+    "A movie character reads an old love letter. What should be on the soundtrack?"
+  ],
+  [
+    "Your team is loading into a Valorant match. What’s your warm-up track?",
+    "You need one upbeat song before a morning workout. What goes on?",
+    "Your friends are picking walkout music for a casual tournament. What’s yours?",
+    "Everyone’s dragging before the final round of game night. What wakes the room up?"
+  ],
+  [
+    "You’re putting on music while friends set up the board games. What plays?",
+    "Your friends are getting ready for a party together. What’s playing in the background?",
+    "You’re hosting brunch and need something everyone can groove to. What goes on?",
+    "You get the aux while everyone cleans up after a house party. What do you put on?"
+  ]
+];
+const auxRounds = auxThemes.flatMap(([originalPrompt, ...songIds], index) =>
+  [originalPrompt, ...auxScenarios[index]].map(prompt => [prompt, ...songIds])
+);
+const auxHistoryKey = 'aries-arcade-aux-seen-prompts';
+let auxSeen = new Set();
+
+function readAuxHistory() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(auxHistoryKey) || '[]');
+    if (Array.isArray(stored)) {
+      for (const prompt of stored) auxSeen.add(prompt);
+    }
+  } catch {
+    // Keep the current page’s history when browser storage is unavailable.
+  }
+}
+
 const auxProgress = document.querySelector('#aux-progress');
 const auxPrompt = document.querySelector('#aux-prompt');
 const auxChoices = document.querySelector('.aux-choices');
@@ -305,7 +396,15 @@ function shuffleAux(items) {
 
 function showAuxRound() {
   const [prompt, featuredId, ...otherIds] = auxSession[auxIndex];
-  auxProgress.textContent = 'Round ' + (auxIndex + 1) + ' of ' + auxSession.length;
+  readAuxHistory();
+  auxSeen.add(prompt);
+  try {
+    localStorage.setItem(auxHistoryKey, JSON.stringify([...auxSeen]));
+  } catch {
+    auxProgress.dataset.history = 'page';
+  }
+  const historyNote = auxProgress.dataset.history === 'page' ? ' · History lasts until refresh' : '';
+  auxProgress.textContent = 'Round ' + (auxIndex + 1) + ' of ' + auxSession.length + historyNote;
   auxPrompt.textContent = prompt;
   auxResult.textContent = '';
   auxTrack.hidden = true;
@@ -347,7 +446,15 @@ function showAuxRound() {
 }
 
 auxStart.addEventListener('click', () => {
-  auxSession = shuffleAux(auxRounds).slice(0, 10);
+  readAuxHistory();
+  auxSession = shuffleAux(auxRounds.filter(([prompt]) => !auxSeen.has(prompt))).slice(0, 10);
+  if (!auxSession.length) {
+    auxProgress.textContent = '';
+    auxPrompt.textContent = 'You’ve seen all 60 scenarios!';
+    auxStart.hidden = true;
+    auxPrompt.focus();
+    return;
+  }
   auxIndex = 0;
   auxMatches = 0;
   auxStart.hidden = true;
