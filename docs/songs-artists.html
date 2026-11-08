@@ -1,4 +1,66 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Aries Arcade, a personal collection of games, music, and shows by Tvu04."><meta name="theme-color" content="#100e17"><link rel="icon" href="logo.svg" type="image/svg+xml"><title>Songs / Artists · Aries Arcade</title><link rel="stylesheet" href="style.css?v=single-nav-link"><link rel="stylesheet" href="collections.css?v=single-nav-link"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Aries Arcade, a personal collection of games, music, and shows by Tvu04."><meta name="theme-color" content="#100e17"><link rel="icon" href="logo.svg" type="image/svg+xml"><title>Songs / Artists · Aries Arcade</title><link rel="stylesheet" href="style.css?v=single-nav-link"><link rel="stylesheet" href="collections.css?v=single-nav-link"><style>
+.wrapped { margin-top:2rem; padding:clamp(1rem,4vw,2.5rem); border:1px solid var(--line); border-radius:1.25rem; background:radial-gradient(ellipse at top right,#3c295c,transparent 62%),var(--panel); }
+.wrapped-header { margin-bottom:1.5rem; }
+.wrapped-header .eyebrow { color:#dbc0ff; margin:0 0 .5rem; }
+.wrapped-header h2 { font-size:clamp(2rem,5vw,3.7rem); line-height:1; letter-spacing:-.04em; margin:0; }
+.wrapped-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(10rem,15rem); align-items:start; gap:clamp(1rem,3vw,2rem); }
+.wrapped-stats,.wrapped-rankings { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.85rem; }
+.wrapped-stats { margin:0 0 .85rem; }
+.wrapped-stats div,.wrapped-ranking { padding:clamp(.8rem,2vw,1.2rem); border:1px solid var(--line); border-radius:.85rem; background:var(--background); }
+.wrapped-stats dt { color:var(--muted); font-size:.85rem; }
+.wrapped-stats dd { margin:.25rem 0 0; font-size:clamp(1.35rem,4vw,2.6rem); font-weight:800; color:var(--lime); }
+.wrapped-ranking h3 { margin:0 0 .55rem; font-size:1rem; color:#dbc0ff; }
+.wrapped-ranking ol { margin:0; padding:0; list-style:none; }
+.wrapped-ranking li { display:grid; grid-template-columns:1.5rem minmax(0,1fr); align-items:baseline; gap:.5rem; padding:.62rem 0; border-top:1px solid var(--line); overflow-wrap:anywhere; }
+.wrapped-ranking li span { color:#dbc0ff; font:700 .72rem var(--mono); }
+.wrapped-card { width:min(100%,15rem); margin:0; }
+.wrapped-card a { display:block; border:1px solid var(--line); border-radius:.85rem; overflow:hidden; }
+.wrapped-card img { display:block; width:100%; height:auto; }
+.wrapped-card figcaption { margin-top:.5rem; color:var(--muted); font-size:.8rem; }
+@media (max-width:800px) { .wrapped-layout { grid-template-columns:minmax(0,1fr); } }
+@media (max-width:480px) { .wrapped-rankings { grid-template-columns:minmax(0,1fr); } }
+</style></head>
 <body><header class="shell top collections-top"><a class="brand" href="./"><img src="logo.svg" alt="" width="44" height="44"><span>ARIES<b>ARCADE</b></span></a><nav class="collections-nav" aria-label="Main navigation"><a href="game-library.html">Game Library</a><a href="k-pop-k-dramas.html">K-Pop / K-Dramas</a><a href="songs-artists.html" aria-current="page">Songs / Artists</a><a href="movies-tv.html">Movies / TV Shows</a></nav></header>
-<main class="shell collection-page"><p class="eyebrow"><span></span> COLLECTION / 03</p><h1 class="collection-title">Songs / Artists</h1><p>The songs I keep on repeat and the artists I listen to most.</p><p>Favorites coming soon.</p></main><footer class="shell foot"><span>ARIES ARCADE</span><a href="https://github.com/Tvu04">TVU04 ON GITHUB ↗</a></footer></body></html>
+<main class="shell collection-page"><p class="eyebrow"><span></span> COLLECTION / 03</p><h1 class="collection-title">Songs / Artists</h1><p>The songs I keep on repeat and the artists I listen to most.</p>
+<section class="wrapped" aria-labelledby="wrapped-title">
+  <header class="wrapped-header">
+    <p class="eyebrow">ARIES ARCADE / LISTENING RECAP</p>
+    <h2 id="wrapped-title">My Spotify Wrapped</h2>
+  </header>
+  <div class="wrapped-layout">
+    <div class="wrapped-details">
+      <dl class="wrapped-stats">
+        <div><dt>Minutes Listened</dt><dd>20,363</dd></div>
+        <div><dt>Top Genre</dt><dd>K-Pop</dd></div>
+      </dl>
+      <div class="wrapped-rankings">
+        <section class="wrapped-ranking" aria-labelledby="wrapped-artists">
+          <h3 id="wrapped-artists">Top Artists</h3>
+          <ol>
+            <li><span aria-hidden="true">01</span><strong>Ariana Grande</strong></li>
+            <li><span aria-hidden="true">02</span><strong>TWICE</strong></li>
+            <li><span aria-hidden="true">03</span><strong>Tori Kelly</strong></li>
+            <li><span aria-hidden="true">04</span><strong>Lauren Spencer Smith</strong></li>
+            <li><span aria-hidden="true">05</span><strong>ZEROBASEONE</strong></li>
+          </ol>
+        </section>
+        <section class="wrapped-ranking" aria-labelledby="wrapped-songs">
+          <h3 id="wrapped-songs">Top Songs</h3>
+          <ol>
+            <li><span aria-hidden="true">01</span><strong>Perfect Harmony</strong></li>
+            <li><span aria-hidden="true">02</span><strong>SIGN</strong></li>
+            <li><span aria-hidden="true">03</span><strong>Pray</strong></li>
+            <li><span aria-hidden="true">04</span><strong>How It’s Done</strong></li>
+            <li><span aria-hidden="true">05</span><strong>HANDS UP</strong></li>
+          </ol>
+        </section>
+      </div>
+    </div>
+    <figure class="wrapped-card">
+      <a href="images/spotify-wrapped.jpg"><img src="images/spotify-wrapped.jpg" alt="Original Spotify Wrapped card featuring Ariana Grande" width="1080" height="1920"></a>
+      <figcaption>Original Spotify Wrapped card</figcaption>
+    </figure>
+  </div>
+</section>
+</main><footer class="shell foot"><span>ARIES ARCADE</span><a href="https://github.com/Tvu04">TVU04 ON GITHUB ↗</a></footer></body></html>
