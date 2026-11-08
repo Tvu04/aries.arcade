@@ -38,6 +38,9 @@
 #aux-next:not([hidden]),#aux-start:not([hidden]) { margin-top:.65rem; }
 #aux-next[hidden],#aux-start[hidden] { display:none; }
 .aux-choices button:disabled { cursor:default; opacity:1; }
+.aux-choices button { display:flex; align-items:center; gap:.65rem; flex:1 1 14rem; min-width:0; }
+.aux-choices button img { flex:none; width:4rem; height:3rem; object-fit:cover; border-radius:.3rem; }
+.aux-choices button span { min-width:0; overflow-wrap:anywhere; }
 </style></head>
 <body><header class="shell top collections-top"><a class="brand" href="./"><img src="logo.svg" alt="" width="44" height="44"><span>ARIES<b>ARCADE</b></span></a><nav class="collections-nav" aria-label="Main navigation"><a href="game-library.html">Game Library</a><a href="k-pop-k-dramas.html">K-Pop / K-Dramas</a><a href="songs-artists.html" aria-current="page">Songs / Artists</a><a href="movies-tv.html">Movies / TV Shows</a></nav></header>
 <main class="shell collection-page"><p class="eyebrow"><span></span> COLLECTION / 03</p><h1 class="collection-title">Songs / Artists</h1><p>The songs I keep on repeat and the artists I listen to most.</p>
@@ -314,7 +317,16 @@ function showAuxRound() {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'button';
-    button.textContent = title + ' · ' + artist;
+    const thumbnail = document.createElement('img');
+    thumbnail.alt = '';
+    thumbnail.width = 120;
+    thumbnail.height = 90;
+    thumbnail.referrerPolicy = 'no-referrer';
+    thumbnail.addEventListener('error', () => { thumbnail.hidden = true; });
+    thumbnail.src = 'https://i.ytimg.com/vi/' + id + '/default.jpg';
+    const label = document.createElement('span');
+    label.textContent = title + ' · ' + artist;
+    button.append(thumbnail, label);
     button.setAttribute('aria-pressed', 'false');
     button.addEventListener('click', () => {
       for (const choice of auxChoices.children) choice.disabled = true;
