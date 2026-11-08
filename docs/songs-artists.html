@@ -22,8 +22,6 @@
 .song-picker button { border:0; cursor:pointer; }
 .song-picker button:disabled { opacity:.65; cursor:wait; }
 .song-picker a { color:var(--lime); }
-#picker-player { margin:1rem 0; }
-#picker-player iframe { display:block; width:min(100%,36rem); height:clamp(200px,45vw,324px); border:0; }
 </style></head>
 <body><header class="shell top collections-top"><a class="brand" href="./"><img src="logo.svg" alt="" width="44" height="44"><span>ARIES<b>ARCADE</b></span></a><nav class="collections-nav" aria-label="Main navigation"><a href="game-library.html">Game Library</a><a href="k-pop-k-dramas.html">K-Pop / K-Dramas</a><a href="songs-artists.html" aria-current="page">Songs / Artists</a><a href="movies-tv.html">Movies / TV Shows</a></nav></header>
 <main class="shell collection-page"><p class="eyebrow"><span></span> COLLECTION / 03</p><h1 class="collection-title">Songs / Artists</h1><p>The songs I keep on repeat and the artists I listen to most.</p>
@@ -36,7 +34,7 @@
   <button class="button" id="pick-song" type="button">Pick a Song</button>
   <p id="picker-status" role="status"></p>
   <a id="picker-track" hidden>Open pick in YouTube Music ↗</a>
-  <div id="picker-player" hidden><div id="picker-video"></div></div>
+
   <p><a href="https://music.youtube.com/playlist?list=PLC-lcOPMJUIE">Open the full playlist ↗</a></p>
 </section>
 <section class="wrapped" aria-labelledby="wrapped-title">
@@ -79,81 +77,21 @@
     </figure>
   </div>
 </section>
-</main><footer class="shell foot"><span>ARIES ARCADE</span><a href="https://github.com/Tvu04">TVU04 ON GITHUB ↗</a></footer><script>
-const playlistId = 'PLC-lcOPMJUIE';
+</main><footer class="shell foot"><span>ARIES ARCADE</span><a href="https://github.com/Tvu04">TVU04 ON GITHUB ↗</a></footer><script src="song-picker-tracks.js"></script><script>
 const pickButton = document.querySelector('#pick-song');
 const pickerStatus = document.querySelector('#picker-status');
 const trackLink = document.querySelector('#picker-track');
-const playerBox = document.querySelector('#picker-player');
-let player;
-let trackIds = [];
-let previousTrack;
-let loadTimer;
-
-function showLoadError() {
-  clearTimeout(loadTimer);
-  if (player) player.destroy();
-  player = undefined;
-  playerBox.hidden = true;
-  playerBox.innerHTML = '<div id="picker-video"></div>';
-  pickerStatus.textContent = 'The playlist could not load. Try again or open it in YouTube Music.';
-  pickButton.disabled = false;
-}
-
-function pickTrack() {
-  const pool = trackIds.length > 1 ? trackIds.filter(id => id !== previousTrack) : trackIds;
-  const id = pool[Math.floor(Math.random() * pool.length)];
-  previousTrack = id;
-  player.cueVideoById(id);
-  trackLink.href = 'https://music.youtube.com/watch?v=' + id;
-  trackLink.hidden = false;
-  pickerStatus.textContent = 'Your pick is ready. Press play or open it in YouTube Music.';
-  pickButton.textContent = 'Pick Again';
-  pickButton.disabled = false;
-}
-
-function loadPlaylist() {
-  playerBox.hidden = false;
-  player = new YT.Player('picker-video', {
-    playerVars: {listType: 'playlist', list: playlistId, playsinline: 1, origin: location.origin},
-    events: {
-      onReady: readPlaylist,
-      onStateChange: readPlaylist,
-      onError: () => {
-        if (!trackIds.length) showLoadError();
-        else pickerStatus.textContent = 'This pick is unavailable in the player. Open it in YouTube Music or pick again.';
-      }
-    }
-  });
-}
-
-function readPlaylist(event) {
-  if (trackIds.length || !pickButton.disabled) return;
-  const ids = event.target.getPlaylist();
-  if (!ids?.length) return;
-  trackIds = [...new Set(ids)];
-  clearTimeout(loadTimer);
-  pickTrack();
-}
+let previousId;
 
 pickButton.addEventListener('click', () => {
-  if (trackIds.length) {
-    pickTrack();
-    return;
-  }
-  pickButton.disabled = true;
-  pickerStatus.textContent = 'Loading the playlist…';
-  loadTimer = setTimeout(showLoadError, 12000);
-  if (window.YT?.Player) {
-    loadPlaylist();
-    return;
-  }
-  window.onYouTubeIframeAPIReady = () => {
-    if (pickButton.disabled && !player) loadPlaylist();
-  };
-  const api = document.createElement('script');
-  api.src = 'https://www.youtube.com/iframe_api';
-  api.onerror = showLoadError;
-  document.head.append(api);
+  const choices = pickerTracks.length > 1
+    ? pickerTracks.filter(track => track[2] !== previousId)
+    : pickerTracks;
+  const [title, artist, id] = choices[Math.floor(Math.random() * choices.length)];
+  previousId = id;
+  pickerStatus.textContent = title + ' · ' + artist;
+  trackLink.href = 'https://music.youtube.com/watch?v=' + id;
+  trackLink.hidden = false;
+  pickButton.textContent = 'Pick Again';
 });
 </script></body></html>
