@@ -69,7 +69,7 @@
     <p class="eyebrow">ARIES ARCADE / MINI-GAME</p>
     <h2 id="aux-title">Pass the Aux</h2>
   </header>
-  <p>Pick a song for each scenario and see how often you match the featured pick. Play up to 10 rounds per game from 60 scenarios. This browser remembers the questions you’ve seen.</p>
+  <p>Pick a song for each scenario and see how often you match the featured pick. Play up to 10 rounds per game from 60 scenarios. This browser remembers the questions and song choices you’ve seen.</p>
   <p id="aux-progress" class="eyebrow"></p>
   <h3 id="aux-prompt" tabindex="-1"></h3>
   <div class="aux-choices" role="group" aria-labelledby="aux-prompt"></div>
@@ -361,13 +361,33 @@ const auxRounds = auxThemes.flatMap(([originalPrompt, ...songIds], index) =>
   [originalPrompt, ...auxScenarios[index]].map(prompt => [prompt, ...songIds])
 );
 const auxHistoryKey = 'aries-arcade-aux-seen-prompts';
-let auxSeen = new Set();
+const auxSongHistoryKey = 'aries-arcade-aux-seen-songs';
+const auxSeen = new Set();
+const auxSongsSeen = new Set();
+
+function auxSongKey(id) {
+  const [title, artist] = tracksById.get(id);
+  return JSON.stringify([title.trim().toLowerCase(), artist.trim().toLowerCase()]);
+}
 
 function readAuxHistory() {
   try {
     const stored = JSON.parse(localStorage.getItem(auxHistoryKey) || '[]');
     if (Array.isArray(stored)) {
       for (const prompt of stored) auxSeen.add(prompt);
+    }
+    const songHistory = localStorage.getItem(auxSongHistoryKey);
+    if (songHistory === null) {
+      for (const [prompt, ...ids] of auxRounds) {
+        if (auxSeen.has(prompt)) {
+          for (const id of ids) auxSongsSeen.add(auxSongKey(id));
+        }
+      }
+    } else {
+      const storedSongs = JSON.parse(songHistory);
+      if (Array.isArray(storedSongs)) {
+        for (const key of storedSongs) auxSongsSeen.add(key);
+      }
     }
   } catch {
     // Keep the current page’s history when browser storage is unavailable.
@@ -395,10 +415,20 @@ function shuffleAux(items) {
 }
 
 function showAuxRound() {
-  const [prompt, featuredId, ...otherIds] = auxSession[auxIndex];
+  const [prompt, ...themeIds] = auxSession[auxIndex];
   readAuxHistory();
+  const choices = [];
+  for (const id of [...themeIds, ...shuffleAux([...tracksById.keys()])]) {
+    const key = auxSongKey(id);
+    if (auxSongsSeen.has(key)) continue;
+    auxSongsSeen.add(key);
+    choices.push(id);
+    if (choices.length === 3) break;
+  }
+  const [featuredId] = choices;
   auxSeen.add(prompt);
   try {
+    localStorage.setItem(auxSongHistoryKey, JSON.stringify([...auxSongsSeen]));
     localStorage.setItem(auxHistoryKey, JSON.stringify([...auxSeen]));
   } catch {
     auxProgress.dataset.history = 'page';
@@ -411,7 +441,7 @@ function showAuxRound() {
   auxNext.hidden = true;
   auxChoices.replaceChildren();
 
-  for (const id of shuffleAux([featuredId, ...otherIds])) {
+  for (const id of shuffleAux(choices)) {
     const [title, artist] = tracksById.get(id);
     const button = document.createElement('button');
     button.type = 'button';
