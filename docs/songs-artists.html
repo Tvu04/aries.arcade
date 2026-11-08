@@ -4,7 +4,7 @@
 .wrapped-header { margin-bottom:1.5rem; }
 .wrapped-header .eyebrow { color:#dbc0ff; margin:0 0 .5rem; }
 .wrapped-header h2 { font-size:clamp(2rem,5vw,3.7rem); line-height:1; letter-spacing:-.04em; margin:0; }
-.wrapped-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(10rem,15rem); align-items:start; gap:clamp(1rem,3vw,2rem); }
+.wrapped-layout { display:grid; grid-template-columns:minmax(0,1fr); gap:clamp(1rem,3vw,2rem); }
 .wrapped-stats,.wrapped-rankings { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.85rem; }
 .wrapped-stats { margin:0 0 .85rem; }
 .wrapped-stats div,.wrapped-ranking { padding:clamp(.8rem,2vw,1.2rem); border:1px solid var(--line); border-radius:.85rem; background:var(--background); }
@@ -14,11 +14,10 @@
 .wrapped-ranking ol { margin:0; padding:0; list-style:none; }
 .wrapped-ranking li { display:grid; grid-template-columns:1.5rem minmax(0,1fr); align-items:baseline; gap:.5rem; padding:.62rem 0; border-top:1px solid var(--line); overflow-wrap:anywhere; }
 .wrapped-ranking li span { color:#dbc0ff; font:700 .72rem var(--mono); }
-.wrapped-card { width:min(100%,15rem); margin:0; }
+.wrapped-card { width:min(100%,15rem); margin:0 auto; text-align:center; }
 .wrapped-card a { display:block; border:1px solid var(--line); border-radius:.85rem; overflow:hidden; }
 .wrapped-card img { display:block; width:100%; height:auto; }
 .wrapped-card figcaption { margin-top:.5rem; color:var(--muted); font-size:.8rem; }
-@media (max-width:800px) { .wrapped-layout { grid-template-columns:minmax(0,1fr); } }
 @media (max-width:480px) { .wrapped-rankings { grid-template-columns:minmax(0,1fr); } }
 </style></head>
 <body><header class="shell top collections-top"><a class="brand" href="./"><img src="logo.svg" alt="" width="44" height="44"><span>ARIES<b>ARCADE</b></span></a><nav class="collections-nav" aria-label="Main navigation"><a href="game-library.html">Game Library</a><a href="k-pop-k-dramas.html">K-Pop / K-Dramas</a><a href="songs-artists.html" aria-current="page">Songs / Artists</a><a href="movies-tv.html">Movies / TV Shows</a></nav></header>
