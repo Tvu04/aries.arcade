@@ -22,6 +22,8 @@
 .song-picker button { border:0; cursor:pointer; }
 .song-picker button:disabled { opacity:.65; cursor:wait; }
 .song-picker a { color:var(--lime); }
+#picker-thumbnail { width:min(100%,24rem); height:auto; aspect-ratio:4/3; object-fit:cover; border-radius:.85rem; margin:0 0 .85rem; }
+#picker-thumbnail:not([hidden]) { display:block; }
 </style></head>
 <body><header class="shell top collections-top"><a class="brand" href="./"><img src="logo.svg" alt="" width="44" height="44"><span>ARIES<b>ARCADE</b></span></a><nav class="collections-nav" aria-label="Main navigation"><a href="game-library.html">Game Library</a><a href="k-pop-k-dramas.html">K-Pop / K-Dramas</a><a href="songs-artists.html" aria-current="page">Songs / Artists</a><a href="movies-tv.html">Movies / TV Shows</a></nav></header>
 <main class="shell collection-page"><p class="eyebrow"><span></span> COLLECTION / 03</p><h1 class="collection-title">Songs / Artists</h1><p>The songs I keep on repeat and the artists I listen to most.</p>
@@ -33,6 +35,7 @@
   <p>Get a random pick from my YouTube Music playlist.</p>
   <button class="button" id="pick-song" type="button">Pick a Song</button>
   <p id="picker-status" role="status"></p>
+  <img id="picker-thumbnail" alt="" width="480" height="360" referrerpolicy="no-referrer" hidden>
   <a id="picker-track" hidden>Open pick in YouTube Music ↗</a>
 
   <p><a href="https://music.youtube.com/playlist?list=PLC-lcOPMJUIE">Open the full playlist ↗</a></p>
@@ -81,7 +84,11 @@
 const pickButton = document.querySelector('#pick-song');
 const pickerStatus = document.querySelector('#picker-status');
 const trackLink = document.querySelector('#picker-track');
+const thumbnail = document.querySelector('#picker-thumbnail');
 let previousId;
+
+thumbnail.addEventListener('load', () => { thumbnail.hidden = false; });
+thumbnail.addEventListener('error', () => { thumbnail.hidden = true; });
 
 pickButton.addEventListener('click', () => {
   const choices = pickerTracks.length > 1
@@ -89,6 +96,8 @@ pickButton.addEventListener('click', () => {
     : pickerTracks;
   const [title, artist, id] = choices[Math.floor(Math.random() * choices.length)];
   previousId = id;
+  thumbnail.hidden = true;
+  thumbnail.src = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
   pickerStatus.textContent = title + ' · ' + artist;
   trackLink.href = 'https://music.youtube.com/watch?v=' + id;
   trackLink.hidden = false;
