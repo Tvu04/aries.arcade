@@ -24,6 +24,11 @@
 .song-picker a { color:var(--lime); }
 #picker-thumbnail { width:min(100%,24rem); height:auto; aspect-ratio:4/3; object-fit:cover; border-radius:.85rem; margin:0 0 .85rem; }
 #picker-thumbnail:not([hidden]) { display:block; }
+.saved-songs { margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--line); }
+#save-pick:not([hidden]) { display:inline-block; margin:.5rem 0; }
+#saved-tracks { list-style:none; padding:0; }
+#saved-tracks li { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.5rem; padding:.65rem 0; border-bottom:1px solid var(--line); }
+#saved-tracks button { border:1px solid var(--line); border-radius:.35rem; background:var(--panel); color:inherit; padding:.4rem .6rem; }
 </style></head>
 <body><header class="shell top collections-top"><a class="brand" href="./"><img src="logo.svg" alt="" width="44" height="44"><span>ARIES<b>ARCADE</b></span></a><nav class="collections-nav" aria-label="Main navigation"><a href="game-library.html">Game Library</a><a href="k-pop-k-dramas.html">K-Pop / K-Dramas</a><a href="songs-artists.html" aria-current="page">Songs / Artists</a><a href="movies-tv.html">Movies / TV Shows</a></nav></header>
 <main class="shell collection-page"><p class="eyebrow"><span></span> COLLECTION / 03</p><h1 class="collection-title">Songs / Artists</h1><p>The songs I keep on repeat and the artists I listen to most.</p>
@@ -36,9 +41,16 @@
   <button class="button" id="pick-song" type="button">Pick a Song</button>
   <p id="picker-status" role="status"></p>
   <img id="picker-thumbnail" alt="" width="480" height="360" referrerpolicy="no-referrer" hidden>
+  <button class="button" id="save-pick" type="button" aria-pressed="false" hidden>♡ Save This Pick</button>
   <a id="picker-track" hidden>Open pick in YouTube Music ↗</a>
 
   <p><a href="https://music.youtube.com/playlist?list=PLC-lcOPMJUIE">Open the full playlist ↗</a></p>
+  <section class="saved-songs" aria-labelledby="saved-title">
+    <h3 id="saved-title">Saved Songs</h3>
+    <p id="saved-empty">Save a pick to find it here later on this browser.</p>
+    <ul id="saved-tracks"></ul>
+    <p id="saved-status" role="status"></p>
+  </section>
 </section>
 <section class="wrapped" aria-labelledby="wrapped-title">
   <header class="wrapped-header">
@@ -102,5 +114,72 @@ pickButton.addEventListener('click', () => {
   trackLink.href = 'https://music.youtube.com/watch?v=' + id;
   trackLink.hidden = false;
   pickButton.textContent = 'Pick Again';
+  saveButton.hidden = false;
+  renderSavedSongs();
 });
+const saveButton = document.querySelector('#save-pick');
+const savedList = document.querySelector('#saved-tracks');
+const savedEmpty = document.querySelector('#saved-empty');
+const savedStatus = document.querySelector('#saved-status');
+const storageKey = 'aries-arcade-saved-songs';
+const tracksById = new Map(pickerTracks.map(track => [track[2], track]));
+let savedIds = new Set();
+
+try {
+  const stored = JSON.parse(localStorage.getItem(storageKey) || '[]');
+  if (Array.isArray(stored)) savedIds = new Set(stored.filter(id => tracksById.has(id)));
+} catch {
+  savedStatus.textContent = 'Saved songs could not be loaded in this browser.';
+}
+
+function renderSavedSongs() {
+  const isSaved = savedIds.has(previousId);
+  saveButton.textContent = isSaved ? '♥ Saved' : '♡ Save This Pick';
+  saveButton.setAttribute('aria-pressed', String(isSaved));
+  savedEmpty.hidden = savedIds.size > 0;
+  savedList.replaceChildren();
+
+  for (const id of savedIds) {
+    const [title, artist] = tracksById.get(id);
+    const row = document.createElement('li');
+    const link = document.createElement('a');
+    link.href = 'https://music.youtube.com/watch?v=' + id;
+    link.textContent = title + ' · ' + artist;
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.textContent = 'Remove';
+    remove.setAttribute('aria-label', 'Remove ' + title);
+    remove.addEventListener('click', () => {
+      if (updateSavedSong(id, false)) {
+        (savedList.querySelector('button') || pickButton).focus();
+      }
+    });
+    row.append(link, remove);
+    savedList.append(row);
+  }
+}
+
+function updateSavedSong(id, shouldSave) {
+  const next = new Set(savedIds);
+  if (shouldSave) next.add(id);
+  else next.delete(id);
+
+  try {
+    localStorage.setItem(storageKey, JSON.stringify([...next]));
+  } catch {
+    savedStatus.textContent = 'This browser could not save your changes.';
+    return false;
+  }
+
+  savedIds = next;
+  renderSavedSongs();
+  savedStatus.textContent = shouldSave ? 'Song saved.' : 'Song removed.';
+  return true;
+}
+
+saveButton.addEventListener('click', () => {
+  if (previousId) updateSavedSong(previousId, !savedIds.has(previousId));
+});
+
+renderSavedSongs();
 </script></body></html>
